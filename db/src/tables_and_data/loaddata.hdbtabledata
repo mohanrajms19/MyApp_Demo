@@ -1,0 +1,17 @@
+{
+    "format_version": 1,
+    "imports": [
+        {
+            "target_table": "users",
+            "source_data": {
+                "data_type": "CSV",
+                "file_name": "users.csv",
+                "has_header": true,
+                "dialect": "HANA",
+                "type_config": {
+                    "delimiter": ";"
+                }
+            }
+        }
+    ]
+}
