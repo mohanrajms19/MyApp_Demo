@@ -1,0 +1,112 @@
+_schema-version: "3.1"
+ID: MyApp
+description: MyApp application
+version: 1.0.0-SNAPSHOT
+modules:
+- name: MyApp-srv
+  type: java
+  path: srv
+  properties:
+    JBP_CONFIG_COMPONENTS: 'jres: [''com.sap.xs.java.buildpack.jre.SAPMachineJRE'']'
+    JBP_CONFIG_SAP_MACHINE_JRE: '{ use_offline_repository: false, version: 17.+ }'
+    SPRING_PROFILES_ACTIVE: cloud,sandbox
+  provides:
+  - name: srv-api
+    properties:
+      srv-url: ${default-url}
+  parameters:
+    buildpack: sap_java_buildpack
+  build-parameters:
+    build-result: target/*-exec.jar
+    builder: custom
+    commands:
+    - mvn clean package -DskipTests=true
+- name: db
+  type: hdb
+  path: db
+  requires:
+  - name: hdi_db
+- name: MyApp-app-content
+  type: com.sap.application.content
+  path: .
+  requires:
+  - name: MyApp-repo-host
+    parameters:
+      content-target: true
+  build-parameters:
+    build-result: resources
+    requires:
+    - artifacts:
+      - commyapp.zip
+      name: commyapp
+      target-path: resources/
+- name: commyapp
+  type: html5
+  path: myapp
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+- name: MyApp-destination-content
+  type: com.sap.application.content
+  requires:
+  - name: MyApp-destination-service
+    parameters:
+      content-target: true
+  - name: MyApp-repo-host
+    parameters:
+      service-key:
+        name: MyApp-repo-host-key
+  - name: uaa_MyApp
+    parameters:
+      service-key:
+        name: uaa_MyApp-key
+  parameters:
+    content:
+      instance:
+        destinations:
+        - Name: Approuter_MyApp_repo_host
+          ServiceInstanceName: MyApp-html5-srv
+          ServiceKeyName: MyApp-repo-host-key
+          sap.cloud.service: Approuter
+        - Authentication: OAuth2UserTokenExchange
+          Name: Approuter_uaa_MyApp
+          ServiceInstanceName: MyApp-xsuaa-service
+          ServiceKeyName: uaa_MyApp-key
+          sap.cloud.service: Approuter
+        existing_destinations_policy: ignore
+  build-parameters:
+    no-source: true
+resources:
+- name: hdi_db
+  type: com.sap.xs.hdi-container
+  properties:
+    hdi-container-name: ${service-name}
+- name: MyApp-repo-host
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: html5-apps-repo
+    service-name: MyApp-html5-srv
+    service-plan: app-host
+- name: MyApp-destination-service
+  type: org.cloudfoundry.managed-service
+  parameters:
+    config:
+      HTML5Runtime_enabled: true
+      version: 1.0.0
+    service: destination
+    service-name: MyApp-destination-service
+    service-plan: lite
+- name: uaa_MyApp
+  type: org.cloudfoundry.managed-service
+  parameters:
+    path: ./xs-security.json
+    service: xsuaa
+    service-name: MyApp-xsuaa-service
+    service-plan: application
+parameters:
+  deploy_mode: html5-repo
+  enable-parallel-deployments: true
