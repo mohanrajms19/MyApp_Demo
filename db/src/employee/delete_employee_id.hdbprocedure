@@ -1,0 +1,18 @@
+PROCEDURE "delete_employee_job_details" (IN IN_PARAM NCLOB) AS
+BEGIN
+  DECLARE temp_detail_id INTEGER;
+  DECLARE i INTEGER;
+    temp_details =
+    SELECT jt.* FROM
+    JSON_TABLE(
+      to_clob(:IN_PARAM),
+      '$.details[*]' COLUMNS(
+        "id" INTEGER PATH '$.id'
+      )
+    ) AS jt;
+    FOR i IN 1..RECORD_COUNT(:temp_details) DO
+      temp_detail_id = :temp_details. "id" [:i];
+      DELETE FROM "employee_job_details" WHERE "id" = :temp_detail_id;
+    END FOR;
+END;
+ 

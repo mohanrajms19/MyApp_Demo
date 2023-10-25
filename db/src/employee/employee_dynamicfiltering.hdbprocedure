@@ -1,0 +1,13 @@
+-- Create an HDB procedure with dynamic filtering
+PROCEDURE employee_dynamicfiltering(
+  IN filter_column NVARCHAR(50),  -- Column to filter
+  IN filter_value NVARCHAR(255)   -- Filter value
+) LANGUAGE SQLSCRIPT AS
+BEGIN
+  -- Construct the SQL query dynamically
+  DECLARE sql_query NVARCHAR(1000);
+  sql_query := 'SELECT * FROM "employee" WHERE "' || :filter_column || '" = ?';
+
+  -- Execute the SQL query
+  EXECUTE IMMEDIATE :sql_query USING :filter_value;
+END;

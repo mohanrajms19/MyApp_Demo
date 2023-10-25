@@ -1,0 +1,10 @@
+PROCEDURE "Employee_fetch_id"(
+    IN p_EMP_NO BIGINT
+)
+AS
+BEGIN
+    SELECT e."first_name",e."gender",e."marital_status",e."dob",e."mobile",e."created_by" AS "emp_created_by" ,e."created_on" AS "emp_created_on",e."modified_by" AS "emp_modified_by",e."modified_on" AS "emp_modified_on",e."status" AS "emp_status",ejd."employment_type",ejd."start_date",ejd."end_date",ejd."status" AS "emp_job_status"
+    FROM "employee" e
+    INNER JOIN  "employee_job_details" AS ejd ON e."id" = ejd."employee_id"
+    WHERE e."id" = p_EMP_NO;
+END;

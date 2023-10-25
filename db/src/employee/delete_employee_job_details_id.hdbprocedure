@@ -1,0 +1,39 @@
+PROCEDURE "delete_employee_job_details_id" (IN ID INTEGER)  
+AS
+BEGIN
+	DECLARE PARENT_ID BIGINT := ID;
+	DECLARE TEMP_PARENT_ID BIGINT := ID;
+	DECLARE i BIGINT := 0;
+	--error handling to drop temp table
+	DECLARE empty_name CONDITION FOR SQL_ERROR_CODE 10001;
+    DECLARE EXIT HANDLER FOR empty_name
+    BEGIN
+        DROP TABLE #results;
+    END;
+    --error handling to drop temp table
+	CREATE LOCAL TEMPORARY COLUMN TABLE #results (
+        "id" BIGINT,
+        "employee_id"  BIGINT
+    );
+	INSERT INTO #results
+    SELECT "id","employee_id"
+    FROM "employee_job_details"
+    WHERE "id" = PARENT_ID;
+    temp_employee = SELECT * FROM "employee_job_details" WHERE "employee_id" = PARENT_ID;
+
+	 WHILE EXISTS (SELECT 0 FROM "employee_job_details" WHERE "employee_id" = PARENT_ID) DO
+    	INSERT INTO #results
+        SELECT t."id",t."employee_id"
+        FROM "employee_job_details" t
+        JOIN #results r ON t."employee_id" = r."id";
+        
+        temp_employee = SELECT * FROM "employee_job_details" WHERE "employee_id" = PARENT_ID;
+         FOR i in 1..RECORD_COUNT(:temp_employee) do 
+			 PARENT_ID = :temp_employee."id"[:i];
+		 END FOR;
+		--SELECT top 1 DISTINCT "id" INTO TEMP_PARENT_ID FROM "property_object_hierarchy" WHERE parent_id = :PARENT_ID;
+    END WHILE;
+
+    DELETE FROM "employee_job_details" WHERE "id" IN (SELECT DISTINCT "id" FROM #results);
+    DROP TABLE #results;
+END;

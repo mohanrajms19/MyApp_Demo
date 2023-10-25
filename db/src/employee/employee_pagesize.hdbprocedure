@@ -1,0 +1,24 @@
+-- Create an HDB procedure with pagination
+PROCEDURE employee_pagesize(
+  IN page INT,
+  IN page_size INT
+) LANGUAGE SQLSCRIPT AS
+BEGIN
+  DECLARE offset INT;
+  DECLARE employee_records INT;
+
+  -- Calculate the offset based on the page number and page size
+  offset := (:page - 1) * :page_size;
+
+  -- Get the total number of records
+  SELECT COUNT(*) INTO employee_records FROM "employee";
+
+  -- Retrieve the data for the specified page
+  SELECT *
+  FROM "employee"
+  ORDER BY "status" -- Replace with the appropriate column for sorting
+  LIMIT :page_size OFFSET :offset;
+  
+  -- Return the total number of records (optional, for pagination metadata)
+  --SELECT :employee_records AS "employee_record" ;
+END;

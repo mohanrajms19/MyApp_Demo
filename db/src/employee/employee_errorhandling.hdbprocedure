@@ -1,0 +1,27 @@
+PROCEDURE "employee_errorhandling" (IN IN_PARAM nclob) AS
+BEGIN
+  IF EXISTS (SELECT 1 FROM "employee" WHERE "first_name" = JSON_VALUE(:IN_PARAM, '$.first_name')) THEN 
+    SIGNAL SQL_ERROR_CODE 10001 SET MESSAGE_TEXT = 'Record already exists';
+  ELSE
+    INSERT INTO "employee" ("first_name", "gender", "marital_status", "dob", "email", "mobile", "created_by", "created_on", "modified_by", "modified_on", "status")
+    SELECT jt."first_name", jt."gender", jt."marital_status", TO_DATE(jt."dob"), jt."email", jt."mobile",
+           TO_BIGINT(jt."created_by"), TO_TIMESTAMP(jt."created_on"), TO_BIGINT(jt."modified_by"),
+           TO_TIMESTAMP(jt."modified_on"), TO_INTEGER(jt."status")
+    FROM JSON_TABLE(
+        :IN_PARAM,
+        '$' COLUMNS (
+          "first_name" NVARCHAR(255) PATH '$.first_name',
+          "gender" NVARCHAR(255) PATH '$.gender',
+          "marital_status" NVARCHAR(255) PATH '$.marital_status',
+          "dob" DATE PATH '$.dob',
+          "email" NVARCHAR(255) PATH '$.email',
+          "mobile" NVARCHAR(255) PATH '$.mobile',
+          "created_by" BIGINT PATH '$.created_by',
+          "created_on" TIMESTAMP PATH '$.created_on',
+          "modified_by" BIGINT PATH '$.modified_by',
+          "modified_on" TIMESTAMP PATH '$.modified_on',
+          "status" INTEGER PATH '$.status'
+        )
+      ) AS jt;
+  END IF;
+END ;

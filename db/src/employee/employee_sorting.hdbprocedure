@@ -1,0 +1,6 @@
+PROCEDURE "Employee_sort"(IN "KEY" NVARCHAR(256)) AS
+BEGIN
+  DECLARE QUERY NVARCHAR(2000) := '';
+  QUERY = 'SELECT "first_name","gender","marital_status","dob","mobile","status" FROM "employee" ORDER BY "' || :KEY || '" DESC';
+  EXECUTE IMMEDIATE :QUERY;
+END;

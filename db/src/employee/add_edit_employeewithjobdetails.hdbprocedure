@@ -1,0 +1,106 @@
+PROCEDURE "add_edit_employeedetails"(IN "IN_PARAM" NCLOB)
+LANGUAGE SQLSCRIPT
+AS
+BEGIN
+    DECLARE  ID BIGINT := 0;
+
+    DECLARE temp_id BIGINT;
+    DECLARE temp_emptype VARCHAR(20);
+    DECLARE temp_empid BIGINT;
+    DECLARE temp_start_date DATE;
+    DECLARE temp_end_date DATE;
+    DECLARE temp_created_by BIGINT;
+    DECLARE temp_created_on DATETIME;
+    DECLARE temp_modified_by BIGINT;
+    DECLARE temp_modified_on DATETIME;
+    DECLARE temp_status INTEGER;
+ 
+    DECLARE i INTEGER;
+   
+    SELECT  IFNULL(JSON_VALUE(:IN_PARAM,'$.id'),0) INTO "ID" FROM DUMMY;
+        -- Check if ID > 0, indicating that the record exists
+        IF :ID > 0 THEN
+            -- Record exists, perform an update
+            UPDATE "employee" SET
+                "id" = JSON_VALUE(:In_PARAM, '$.id'),
+                "first_name" = JSON_VALUE(:IN_PARAM, '$.first_name'),
+                "gender" = JSON_VALUE(:IN_PARAM, '$.gender'),
+                "marital_status" =JSON_VALUE(:IN_PARAM,'$.marital_status'),
+                "dob" =JSON_VALUE(:IN_PARAM,'$.dob'),
+                "email" =JSON_VALUE(:IN_PARAM,'$.email'),
+                "mobile" = JSON_VALUE(:IN_PARAM, '$.mobile'),
+                "created_by" = JSON_VALUE(:IN_PARAM, '$.created_by'),
+                "created_on" = JSON_VALUE(:IN_PARAM, '$.created_on'),
+                "modified_by" = JSON_VALUE(:IN_PARAM, '$.modified_by'),
+                "modified_on" = JSON_VALUE(:IN_PARAM, '$.modified_on'),
+                "status" = JSON_VALUE(:IN_PARAM, '$.status')
+            WHERE "id" = :ID;
+        ELSE    
+                --Record doesn't exist, perform an insert
+                INSERT INTO "employee" ("first_name","gender","marital_status","dob","email","mobile","created_by","created_on","modified_by","modified_on","status")
+                VALUES (
+                   -- JSON_VALUE(:IN_PARAM, '$.id'),
+                    JSON_VALUE(:IN_PARAM, '$.first_name'),
+                    JSON_VALUE(:IN_PARAM, '$.gender'),
+                    JSON_VALUE(:IN_PARAM, '$.marital_status'),
+                    JSON_VALUE(:IN_PARAM, '$.dob'),
+                    JSON_VALUE(:IN_PARAM, '$.email'),
+                    JSON_VALUE(:IN_PARAM, '$.mobile'),
+                    JSON_VALUE(:IN_PARAM, '$.created_by'),
+                    JSON_VALUE(:IN_PARAM, '$.created_on'),
+                    JSON_VALUE(:IN_PARAM, '$.modified_by'),
+                    JSON_VALUE(:IN_PARAM, '$.modified_on'),
+                    JSON_VALUE(:IN_PARAM, '$.status')    
+                );
+                select current_identity_value() into ID from dummy;
+            END IF;
+        temp_details = SELECT JT.*
+        FROM JSON_TABLE(
+            to_clob(:IN_PARAM),
+            '$.details[*]' COLUMNS(
+                "id" varchar(256) PATH '$.id',
+                "employment_type" varchar(256) PATH '$.employment_type',
+                "start_date" DATE PATH '$.start_date',
+                "end_date" DATE PATH '$.end_date',
+                "employee_id" BIGINT PATH '$.employee_id',
+                "created_by" BIGINT PATH '$.created_by',
+                "created_on" DATETIME PATH '$.created_on',
+                "modified_by" BIGINT PATH '$.modified_by',
+                "modified_on" DATETIME PATH '$.modified_on',
+                "status" INTEGER PATH '$.status'
+            )
+        ) AS JT;
+        FOR i in 1..RECORD_COUNT(:temp_details) do
+
+           -- temp_empid = :temp_details."employee_id"[:i] ;
+            temp_id = :temp_details."id"[:i];
+            temp_emptype = :temp_details."employment_type"[:i] ;
+            temp_start_date = :temp_details."start_date"[:i] ;
+            temp_end_date = :temp_details."end_date"[:i] ;
+            temp_created_by = :temp_details."created_by"[:i] ;
+            temp_created_on = :temp_details."created_on"[:i] ;
+            temp_modified_by  = :temp_details."modified_by"[:i] ;
+            temp_modified_on  = :temp_details."modified_on"[:i] ;
+            temp_status = :temp_details."status"[:i] ;
+            --IF :temp_empid> 0 THEN
+            IF :temp_id > 0 THEN
+                --update the existing values
+                UPDATE "employee_job_details" SET
+                    "id" =temp_id,
+                    "employee_id" = ID,
+                    "employment_type" = temp_emptype,
+                    "start_date" = temp_start_date,
+                    "end_date" = temp_end_date,
+                    "created_by" = temp_created_by,
+                    "created_on" = temp_created_on,
+                    "modified_by" = temp_modified_by,
+                    "modified_on" = temp_modified_on,
+                    "status" = temp_status
+                WHERE "id" = temp_id;
+            ELSE
+                --inserting new values
+               INSERT INTO "employee_job_details" ("employee_id","employment_type","start_date","end_date","created_by","created_on","modified_by","modified_on","status")
+               VALUES (ID, temp_emptype, temp_start_date, temp_end_date, temp_created_by, temp_created_on, temp_modified_by, temp_modified_on, temp_status);
+            END IF;
+        END FOR;
+END;

@@ -1,0 +1,16 @@
+PROCEDURE "employee_filter"(IN NAME NVARCHAR(200)) AS
+BEGIN
+  DECLARE dynamic_sql NVARCHAR(1000);
+  -- Define your parameters
+  DECLARE QUERY NVARCHAR(2000) := '';
+  -- Construct the dynamic SQL statement
+  dynamic_sql := 'SELECT * FROM "employee" WHERE';
+  -- Append the condition based on the value of QUERY
+  IF :QUERY = '' THEN dynamic_sql := dynamic_sql || ' LOWER("first_name") LIKE ''%' || LOWER(:NAME) || '%''';
+  ELSE dynamic_sql := dynamic_sql || ' LOWER("first_name") LIKE ''%' || LOWER(:NAME) || '%''';
+END IF;
+-- Execute the dynamic SQL statement
+EXECUTE IMMEDIATE :dynamic_sql;
+-- Now you can use the query_result table variable to work with the result
+--SELECT * FROM :dynamic_sql;
+END; 

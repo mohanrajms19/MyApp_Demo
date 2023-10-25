@@ -1,0 +1,32 @@
+PROCEDURE  "Paging_With_dynamicsortingandfiltering" (IN "SHOW_ALL" BOOLEAN,IN ID BIGINT, IN "FILTER_PARAMS" NCLOB,IN "PAGE_NUMBER" INTEGER,
+IN "PAGE_SIZE" INTEGER, IN "SORTING_KEY" NVARCHAR(100)) AS
+BEGIN
+    DECLARE Total_Records INTEGER:=0;
+    DECLARE Query NVARCHAR(2000) :='';
+    DECLARE START_INDEX INTEGER := (:PAGE_NUMBER - 1) * :PAGE_SIZE;
+    DECLARE temp_employee NVARCHAR(5000);
+    DECLARE NAME NVARCHAR(100);
+    DECLARE GENDER NVARCHAR(100);
+    temp_employee := 'SELECT * FROM "employee"';
+    EXECUTE IMMEDIATE 'SELECT COUNT(*) FROM (' || :temp_employee || ')' INTO Total_Records;
+    PAGE_SIZE = CASE WHEN PAGE_SIZE = 0 THEN:Total_Records ELSE PAGE_SIZE END;
+   
+    IF SHOW_ALL = TRUE THEN
+        Query:= 'SELECT' ||' * FROM "employee"  ORDER BY  "'|| :SORTING_KEY ||'" DESC LIMIT '||:PAGE_SIZE||' OFFSET '||:START_INDEX;
+        EXECUTE IMMEDIATE :QUERY;
+    ELSE
+        IF FILTER_PARAMS != '' THEN
+            SELECT JSON_VALUE(:FILTER_PARAMS, '$.first_name') INTO "NAME" FROM DUMMY;
+        SELECT JSON_VALUE(:FILTER_PARAMS, '$.gender') INTO "GENDER" FROM DUMMY;
+        IF:NAME !='' THEN
+        QUERY = CASE WHEN QUERY = '' THEN '  LOWER("first_name") like ''%' ||  LOWER(:NAME) || '%'''  ELSE ' AND   LOWER("first_name") like ''%' ||  LOWER(:NAME) || '%''' END;
+        END IF;
+        IF :GENDER !='' THEN
+        QUERY = CASE WHEN QUERY = '' THEN '  LOWER("gender") like ''%' ||  LOWER(:GENDER) || '%'''  ELSE ' AND   LOWER("gender") like ''%' ||  LOWER(:GENDER) || '%''' END;
+        END IF;
+            -- QUERY = ' SELECT ' || '* FROM "employee"  WHERE ' || QUERY || ' ORDER BY "' || :SORTING_KEY || '" DESC';
+            QUERY = ' SELECT ' || '* FROM "employee"  WHERE ' || QUERY || ' ORDER BY "' || :SORTING_KEY || '"';
+            EXECUTE IMMEDIATE :QUERY || ' LIMIT :PAGE_SIZE OFFSET :START_INDEX' USING :PAGE_SIZE, :START_INDEX;        
+    END IF;
+    END IF;
+END
