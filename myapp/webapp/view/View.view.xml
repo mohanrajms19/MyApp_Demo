@@ -1,7 +1,12 @@
 <mvc:View controllerName="com.myapp.controller.View"
     xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
-    xmlns="sap.m">
-    <Page id="page" title="{i18n>title}">
+    xmlns="sap.f">
+    <!-- <Page id="page" title="{i18n>title}">
         <content />
-    </Page>
+    </Page> -->
+    <FlexibleColumnLayout
+    id="page"
+    stateChange=".onStateChanged"
+    backgroundDesign="Solid"
+    layout="{/layout}"/>
 </mvc:View>

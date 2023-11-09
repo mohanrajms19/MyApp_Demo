@@ -79,10 +79,16 @@
       "routes": [
         {
           "name": "RouteView",
-          "pattern": ":?query:",
+          "pattern": "route",
           "target": [
             "TargetView"
           ]
+        },
+        {
+          "name":"Employee",
+          "pattern":"",
+          "target":["Employee"]
+
         }
       ],
       "targets": {
@@ -92,6 +98,13 @@
           "clearControlAggregation": false,
           "viewId": "View",
           "viewName": "View"
+        },
+        "Employee":{
+          "viewType":"XML",
+          "transition": "slide",
+          "clearControlAggregation": false,
+          "viewId": "Employee",
+          "viewName": "Employee"
         }
       }
     },

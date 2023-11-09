@@ -1,0 +1,133 @@
+<mvc:View xmlns:mvc="sap.ui.core.mvc" 
+    xmlns="sap.m" 
+    xmlns:f="sap.f" 
+    xmlns:core="sap.ui.core" 
+    xmlns:form="sap.ui.layout.form" 
+    xmlns:uxap="sap.uxap" 
+    xmlns:tnt="sap.tnt" 
+    xmlns:table="sap.ui.table" 
+    xmlns:fb="sap.ui.comp.filterbar"
+    xmlns:v="sap.ui.comp.variants"
+    xmlns:smartForm="sap.ui.comp.smartform" 
+    xmlns:smartField="sap.ui.comp.smartfield" 
+    xmlns:card="sap.f.cards" 
+    xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" controllerName="com.myapp.controller.Employee" 
+    xmlns:html="http://www.w3.org/1999/xhtml" 
+    xmlns:l="sap.ui.layout">
+    <f:DynamicPage id="page_MngEmployees">
+      <f:title>
+          <f:DynamicPageTitle>
+              <f:heading>
+                  <Title id="titleId" text="Employees"/>
+              </f:heading>
+          </f:DynamicPageTitle>
+      </f:title>
+      <f:header>
+          <f:DynamicPageHeader pinnable="true">
+              <fb:FilterBar id="fb_Employees" persistencyKey="myPersKey" useToolbar="false" search="advancedFilter" showClearOnFB="true" clear="clearAllFilters" filterChange=".onFilterChange" afterVariantLoad=".onAfterVariantLoad">
+                  <fb:filterItems>
+                      <fb:FilterItem name="D" label="{i18n>organization_companyName}" mandatory="true">
+                          <fb:control>
+                              <ComboBox id="emp_CompanyFilter" placeholder="Please Select the Company" items="{companyModel>/}" selectedKey="{empSearchReqModel>/company_id}" showSecondaryValues= "true" change="changeCompany">
+                                  <core:ListItem key="{companyModel>id}" text="{companyModel>name}"/>
+                              </ComboBox>
+                          </fb:control>
+                      </fb:FilterItem>
+                      <fb:FilterItem name="A" label="{i18n>organization_empCode}">
+                          <fb:control>
+                              <Input placeholder="{i18n>organization_Pleaseenterthecode}" value="{empSearchReqModel>/emp_code}"/>
+                          </fb:control>
+                      </fb:FilterItem>
+                      <fb:FilterItem name="B" label="{i18n>organization_firstName}">
+                          <fb:control>
+                              <Input placeholder="{i18n>organization_Pleaseenterthefirstname}" value="{empSearchReqModel>/first_name}"/>
+                          </fb:control>
+                      </fb:FilterItem>
+                      <fb:FilterItem name="C" label="{i18n>organization_lastName}">
+                          <fb:control>
+                              <Input placeholder="{i18n>organization_Pleaseenterthelastname}" value="{empSearchReqModel>/last_name}"/>
+                          </fb:control>
+                      </fb:FilterItem>
+
+                      <fb:FilterItem name="F" label="{i18n>organization_status}">
+                          <fb:control>
+                              <ComboBox items="{masterDataMdl>/status}" placeholder="{i18n>organization_plhoStatus}" selectedKey="{empSearchReqModel>/status}">
+                                  <core:Item key="{masterDataMdl>value}" text="{masterDataMdl>description}"/>
+                              </ComboBox>
+                          </fb:control>
+                      </fb:FilterItem>
+                  </fb:filterItems>
+              </fb:FilterBar>
+          </f:DynamicPageHeader>
+      </f:header>
+      <f:content>
+          <Table id="tableEmployees" items="{employeeListMdl>/}" mode="None" sticky="ColumnHeaders,HeaderToolbar" inset="false" class="sapUiSmallMarginTop" selectionChange="onPressSelectRow">
+              <headerToolbar>
+                  <OverflowToolbar>
+                      <content>
+                          <Label design="Bold" text="Items({= ${employeeListMdl>/}.length})" />
+                          <ToolbarSpacer />
+                          <!-- <Button id="btnEditPayments" type="Ghost" text="{i18n>organization_btnPayments}" press="onPressEditEmployeePayment" enabled="false" width="125px"/>
+                          <Button id="btnTimes" type="Ghost" text="{i18n>organization_btnViewTimes}" press="onPressTimes" enabled="false" width="100px"/>
+                          <ToolbarSeparator id="seperatorIdOne"/> -->
+                          <!-- <Button id="btnSynchronize" icon="sap-icon://synchronize" type="Transparent" press="onPressSync" tooltip="Cloud Synchronize"/>
+                          <ToolbarSeparator id="seperatorIdTwo"/> -->
+                          <Button icon="sap-icon://download" press="onPressExport" tooltip="Download Excel"/>
+                          <ToolbarSeparator />
+                          <OverflowToolbarButton type="Transparent" tooltip="Sort" icon="sap-icon://sort" press="handleSortButtonPressed"/>
+                          <OverflowToolbarButton type="Transparent" tooltip="Group" icon="sap-icon://group-2" press="handleGroupButtonPressed"/>
+                          <OverflowToolbarButton type="Transparent" icon="sap-icon://settings" tooltip="Settings" press="handlePersoButtonPressed" />
+                      </content>
+                  </OverflowToolbar>
+              </headerToolbar>
+              <columns>
+                  <Column hAlign="Begin">
+                      <Text text="{i18n>organization_empCode}" />
+                  </Column>
+                  <Column hAlign="Begin" minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+                      <Text text="{i18n>organization_firstName}" />
+                  </Column>
+                  <Column hAlign="Begin" minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+                      <Text text="{i18n>organization_lastName}" />
+                  </Column>
+                  <Column hAlign="Begin" minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+                      <Text text="{i18n>organization_Email}" />
+                  </Column>
+                  <Column hAlign="Center" minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+                      <Text text="{i18n>organization_DOB}" />
+                  </Column>
+                  <Column hAlign="Begin" minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+                      <Text text="{i18n>organization_Gender}" />
+                  </Column>
+                  <Column hAlign="Center">
+                      <Text text="{i18n>organization_status}" />
+                  </Column>
+              </columns>
+              <items>
+                  <ColumnListItem type="Navigation" navigated="{
+          parts: [
+            'settings>/navigatedItem',
+            'employeeListMdl>id'
+          ],
+          formatter: '.formatter.isNavigated'
+        }" press=".onListItemPress">
+                      <cells>
+                          <Link text="{employeeListMdl>empCode}" wrapping="false" press="onPressEditEmployee"/>
+                          <Text text="{employeeListMdl>first_name}" wrapping="false" />
+                          <Text text="{employeeListMdl>last_name}" wrapping="false" />
+                          <Text text="{employeeListMdl>email}" wrapping="false" />
+                          <Text text="{parts:[{path:'settings>/userSettings/dateFormatKey'}, {path:'employeeListMdl>dob'}], formatter: '.getDateFormats'}"/>
+                          <Text text="{employeeListMdl>gender}" wrapping="false" />
+                          <ObjectStatus text="{employeeListMdl>statusText}" state="{=${employeeListMdl>statusText} === 'Active' ? 'Success' : 'Error'}"/>
+                      </cells>
+                  </ColumnListItem>
+              </items>
+          </Table>
+      </f:content>
+      <f:footer>
+          <Toolbar>
+              <Button id="btn_MngEmployeeError" visible="{=!!${errors>/}.length}" icon="sap-icon://error" type="Negative" text="Error" press=".handleMessagePopoverPress" ariaHasPopup="Dialog" />
+          </Toolbar>
+      </f:footer>
+  </f:DynamicPage>
+</mvc:View>
