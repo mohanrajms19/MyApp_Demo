@@ -26,32 +26,32 @@
           <f:DynamicPageHeader pinnable="true">
               <fb:FilterBar id="fb_Employees" persistencyKey="myPersKey" useToolbar="false" search="advancedFilter" showClearOnFB="true" clear="clearAllFilters" filterChange=".onFilterChange" afterVariantLoad=".onAfterVariantLoad">
                   <fb:filterItems>
-                      <fb:FilterItem name="D" label="{i18n>organization_companyName}" mandatory="true">
+                      <!-- <fb:FilterItem name="D" label="{i18n>organization_companyName}" mandatory="true">
                           <fb:control>
                               <ComboBox id="emp_CompanyFilter" placeholder="Please Select the Company" items="{companyModel>/}" selectedKey="{empSearchReqModel>/company_id}" showSecondaryValues= "true" change="changeCompany">
                                   <core:ListItem key="{companyModel>id}" text="{companyModel>name}"/>
                               </ComboBox>
                           </fb:control>
-                      </fb:FilterItem>
-                      <fb:FilterItem name="A" label="{i18n>organization_empCode}">
+                      </fb:FilterItem> -->
+                      <fb:FilterItem name="A" label="Employee Code">
                           <fb:control>
-                              <Input placeholder="{i18n>organization_Pleaseenterthecode}" value="{empSearchReqModel>/emp_code}"/>
+                              <Input placeholder="Employee Code" value="{empSearchReqModel>/emp_code}"/>
                           </fb:control>
                       </fb:FilterItem>
-                      <fb:FilterItem name="B" label="{i18n>organization_firstName}">
+                      <fb:FilterItem name="B" label="First Name">
                           <fb:control>
-                              <Input placeholder="{i18n>organization_Pleaseenterthefirstname}" value="{empSearchReqModel>/first_name}"/>
+                              <Input placeholder="First Name" value="{empSearchReqModel>/first_name}"/>
                           </fb:control>
                       </fb:FilterItem>
-                      <fb:FilterItem name="C" label="{i18n>organization_lastName}">
+                      <fb:FilterItem name="C" label="Last Name">
                           <fb:control>
-                              <Input placeholder="{i18n>organization_Pleaseenterthelastname}" value="{empSearchReqModel>/last_name}"/>
+                              <Input placeholder="Last Name" value="{empSearchReqModel>/last_name}"/>
                           </fb:control>
                       </fb:FilterItem>
 
-                      <fb:FilterItem name="F" label="{i18n>organization_status}">
+                      <fb:FilterItem name="D" label="Status">
                           <fb:control>
-                              <ComboBox items="{masterDataMdl>/status}" placeholder="{i18n>organization_plhoStatus}" selectedKey="{empSearchReqModel>/status}">
+                              <ComboBox items="{masterDataMdl>/status}" placeholder="Status" selectedKey="{empSearchReqModel>/status}">
                                   <core:Item key="{masterDataMdl>value}" text="{masterDataMdl>description}"/>
                               </ComboBox>
                           </fb:control>
@@ -82,25 +82,25 @@
               </headerToolbar>
               <columns>
                   <Column hAlign="Begin">
-                      <Text text="{i18n>organization_empCode}" />
+                      <Text text="Employee Code" />
                   </Column>
                   <Column hAlign="Begin" minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
-                      <Text text="{i18n>organization_firstName}" />
+                      <Text text="First Name" />
                   </Column>
                   <Column hAlign="Begin" minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
-                      <Text text="{i18n>organization_lastName}" />
+                      <Text text="Last Name" />
                   </Column>
                   <Column hAlign="Begin" minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
-                      <Text text="{i18n>organization_Email}" />
+                      <Text text="Email" />
                   </Column>
                   <Column hAlign="Center" minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
-                      <Text text="{i18n>organization_DOB}" />
+                      <Text text="DOB" />
                   </Column>
                   <Column hAlign="Begin" minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
-                      <Text text="{i18n>organization_Gender}" />
+                      <Text text="Gender" />
                   </Column>
                   <Column hAlign="Center">
-                      <Text text="{i18n>organization_status}" />
+                      <Text text="status" />
                   </Column>
               </columns>
               <items>
