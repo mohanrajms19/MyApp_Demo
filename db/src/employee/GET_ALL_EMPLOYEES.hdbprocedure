@@ -1,0 +1,7 @@
+PROCEDURE "GET_ALL_EMPLOYEES"()
+
+LANGUAGE SQLSCRIPT GET_ALL_EMPLOYEES
+BEGIN
+    --SELECT all columns form employee table
+    SELECT "id","first_name";
+END;    
