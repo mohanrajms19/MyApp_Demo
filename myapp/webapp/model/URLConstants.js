@@ -3,6 +3,10 @@ sap.ui.define([], function () {
 
 	return {
 		URL: {
+            app_endPoint: 'http://localhost:8082/',
 
-        }}
+
+            Employee:"Employee",
+            Employeeall:"Employe/all"
+        }};
     })

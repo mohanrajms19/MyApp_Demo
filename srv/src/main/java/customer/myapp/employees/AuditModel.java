@@ -1,4 +1,4 @@
-package customer.myapp.employee;
+package customer.myapp.employees;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

@@ -40,7 +40,7 @@
                       </fb:FilterItem>
                       <fb:FilterItem name="B" label="First Name">
                           <fb:control>
-                              <Input placeholder="First Name" value="{empSearchReqModel>/first_name}"/>
+                              <Input placeholder="First Name" value="{Employees>first_name}"/>
                           </fb:control>
                       </fb:FilterItem>
                       <fb:FilterItem name="C" label="Last Name">
@@ -61,7 +61,7 @@
           </f:DynamicPageHeader>
       </f:header>
       <f:content>
-          <Table id="tableEmployees" items="{employeeListMdl>/}" mode="None" sticky="ColumnHeaders,HeaderToolbar" inset="false" class="sapUiSmallMarginTop" selectionChange="onPressSelectRow">
+          <Table id="tableEmployees" items="{Employees>/}" mode="None" sticky="ColumnHeaders,HeaderToolbar" inset="false" class="sapUiSmallMarginTop" selectionChange="onPressSelectRow">
               <headerToolbar>
                   <OverflowToolbar>
                       <content>
@@ -104,16 +104,10 @@
                   </Column>
               </columns>
               <items>
-                  <ColumnListItem type="Navigation" navigated="{
-          parts: [
-            'settings>/navigatedItem',
-            'employeeListMdl>id'
-          ],
-          formatter: '.formatter.isNavigated'
-        }" press=".onListItemPress">
+                  <ColumnListItem type="Navigation" >
                       <cells>
                           <Link text="{employeeListMdl>empCode}" wrapping="false" press="onPressEditEmployee"/>
-                          <Text text="{employeeListMdl>first_name}" wrapping="false" />
+                          <Text text="{Employees>first_name}" wrapping="false" />
                           <Text text="{employeeListMdl>last_name}" wrapping="false" />
                           <Text text="{employeeListMdl>email}" wrapping="false" />
                           <Text text="{parts:[{path:'settings>/userSettings/dateFormatKey'}, {path:'employeeListMdl>dob'}], formatter: '.getDateFormats'}"/>
